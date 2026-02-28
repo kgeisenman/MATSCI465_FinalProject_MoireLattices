@@ -48,7 +48,7 @@ def crop_center_square(structure, shrink_factor=0.8):
 
     return cropped
 
-def generate_twisted_bilayers(f, twist_angle):
+def generate_twisted_bilayers(f, twist_angle=0.0, scale=10):
     """
     Generates an Atoms object for twisted bilayers of 2D materials.
 
@@ -56,13 +56,14 @@ def generate_twisted_bilayers(f, twist_angle):
         - f (str): Input structure file (i.e. CIF, xyz, POSCAR, etc.)
             * NOTE: This will only work for structure files that only contain two layers within the unit cell.
         - twist_angle (float): Twist angle (in degrees) of the bilayers about the z-axis
+        - scale (int): Number of repetitions of the default supercell
 
     Returns:
         - full_structure (Atoms object in ASE): Output structure file of twisted bilayers
     """
 
     # Read the cif file + extend the cell along the x- and y-directions
-    structure = ase.io.read(f, index=-1) * (10, 10, 1)
+    structure = ase.io.read(f, index=-1) * (scale, scale, 1)
 
     # cif files from Materials Project typically contain two layers, only one is necessary
     # 1. Create a mask to extract only one of the layers
@@ -96,6 +97,7 @@ def generate_twisted_bilayers(f, twist_angle):
     full_structure.extend(second_monolayer)
     full_structure.center(vacuum=2.0, axis=2)
     full_structure = crop_center_square(full_structure)
+    full_structure.set_pbc([1, 1, 0])
     full_structure.wrap()
     
     return full_structure
