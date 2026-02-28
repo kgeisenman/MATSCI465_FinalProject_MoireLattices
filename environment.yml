@@ -7,3 +7,4 @@ dependencies:
   - matplotlib
   - abtem=1.0.9
   - jupyterlab
+  - ase=3.27.0
